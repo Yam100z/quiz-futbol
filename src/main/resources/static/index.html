@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gestión Fútbol</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
+:root {
+  --blue:#2563eb; --blue-l:#dbeafe; --blue-d:#1d4ed8; --blue-xd:#1e3a8a;
+  --gray50:#f9fafb; --gray100:#f3f4f6; --gray200:#e5e7eb; --gray300:#d1d5db;
+  --gray400:#9ca3af; --gray500:#6b7280; --gray700:#374151; --gray900:#111827;
+  --red:#dc2626; --red-l:#fee2e2;
+  --green:#16a34a; --green-l:#dcfce7;
+  --amber:#d97706; --amber-l:#fef3c7;
+  --sur:#ffffff; --bg:#f3f4f6;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: var(--bg);
+  color: var(--gray900);
+  font-size: 14px;
+  min-height: 100vh;
+}
+
+/* ── TOPBAR ── */
+.topbar {
+  background: var(--sur);
+  border-bottom: 1px solid var(--gray200);
+  height: 58px;
+  display: flex;
+  align-items: center;
+  padding: 0 32px;
+  gap: 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--gray900);
+  margin-right: 32px;
+  flex-shrink: 0;
+  letter-spacing: -0.3px;
+}
+
+.brand-icon {
+  width: 30px; height: 30px;
+  background: var(--blue);
+  border-radius: 7px;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff;
+  font-size: 15px;
+}
+
+.nav-pills-top {
+  display: flex;
+  gap: 1px;
+  flex: 1;
+  overflow-x: auto;
+}
+.nav-pills-top::-webkit-scrollbar { display: none; }
+
+.npill {
+  padding: 7px 16px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: var(--gray500);
+  font-size: 13px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all .15s;
+}
+.npill:hover { background: var(--gray100); color: var(--gray900); }
+.npill.active { background: var(--blue-l); color: var(--blue-d); font-weight: 600; }
+
+.port-tag {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--gray500);
+  background: var(--gray100);
+  border: 1px solid var(--gray200);
+  border-radius: 20px;
+  padding: 3px 11px;
+  flex-shrink: 0;
+}
+
+/* ── LAYOUT (sin sidebar) ── */
+.layout { padding: 28px 32px; max-width: 1300px; margin: 0 auto; }
+.sidebar { display: none; }
+
+/* ── PAGE HEADER ── */
+.page { display: none !important; }
+.page.active { display: block !important; }
+
+.ph {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.ph-left h2 {
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--gray900);
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 3px;
+  letter-spacing: -0.4px;
+}
+.ph-left p { font-size: 12px; color: var(--gray400); margin: 0; }
+
+.ph-icon {
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px;
+  background: var(--blue-l);
+  color: var(--blue-d);
+  flex-shrink: 0;
+}
+
+/* ── BADGES ── */
+.rbadge {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.3px;
+}
+.rb-teal  { background: var(--blue-l); color: var(--blue-d); }
+.rb-amber { background: var(--amber-l); color: var(--amber); }
+.rb-blue  { background: var(--blue-l); color: var(--blue-d); }
+.rb-purple{ background: #ede9fe; color: #5b21b6; }
+
+/* ── TABLE ── */
+.t-card {
+  background: var(--sur);
+  border: 1px solid var(--gray200);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.t-card table { margin: 0; font-size: 13px; }
+.t-card thead th {
+  background: var(--gray50);
+  color: var(--gray500);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  padding: 11px 16px;
+  border-bottom: 1px solid var(--gray200);
+  white-space: nowrap;
+}
+.t-card tbody td {
+  padding: 12px 16px;
+  vertical-align: middle;
+  border-color: var(--gray100);
+  color: var(--gray700);
+}
+.t-card tbody tr { transition: background .1s; }
+.t-card tbody tr:hover { background: var(--gray50); }
+.t-card tbody tr:last-child td { border: none; }
+
+.c-id   { font-weight: 700; color: var(--blue); font-size: 13px; }
+.c-name { font-weight: 600; color: var(--gray900); }
+
+.c-chip {
+  display: inline-flex; align-items: center; gap: 4px;
+  background: var(--gray100);
+  border: 1px solid var(--gray200);
+  border-radius: 5px;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--gray700);
+}
+.c-num {
+  width: 26px; height: 26px;
+  background: var(--blue-l);
+  border-radius: 6px;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--blue-d);
+}
+
+.st-badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 4px;
+  display: inline-flex; align-items: center; gap: 4px;
+}
+.st-a { background: var(--green-l); color: var(--green); }
+.st-e { background: var(--red-l); color: var(--red); }
+.st-c { background: var(--amber-l); color: var(--amber); }
+
+/* ── BUTTONS ── */
+.btn-teal {
+  background: var(--blue);
+  border: none;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  padding: 8px 18px;
+  border-radius: 7px;
+  cursor: pointer;
+  display: inline-flex; align-items: center; gap: 6px;
+  transition: all .15s;
+}
+.btn-teal:hover { background: var(--blue-d); }
+
+.btn-ed {
+  padding: 5px 11px;
+  font-size: 12px;
+  font-weight: 500;
+  font-family: inherit;
+  border-radius: 6px;
+  cursor: pointer;
+  display: inline-flex; align-items: center; gap: 4px;
+  transition: all .12s;
+}
+.btn-edit-s {
+  background: #fff;
+  border: 1px solid var(--gray300);
+  color: var(--gray700);
+}
+.btn-edit-s:hover { border-color: var(--blue); color: var(--blue); background: var(--blue-l); }
+.btn-del-s {
+  background: #fff;
+  border: 1px solid #fca5a5;
+  color: var(--red);
+}
+.btn-del-s:hover { background: var(--red-l); }
+
+/* ── MODAL ── */
+.modal-content {
+  border: none;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.13);
+}
+.modal-header {
+  background: var(--gray900);
+  border-bottom: none;
+  padding: 18px 22px;
+}
+.modal-title { color: #fff; font-size: 14px; font-weight: 700; }
+.modal-sub   { color: var(--gray400); font-size: 11px; margin-top: 2px; }
+.modal-header .btn-close { filter: invert(1) opacity(0.5); }
+.modal-body   { padding: 22px; }
+.modal-footer {
+  border-top: 1px solid var(--gray200);
+  background: var(--gray50);
+  padding: 14px 22px;
+}
+
+.rel-section {
+  background: var(--gray50);
+  border: 1px solid var(--gray200);
+  border-radius: 8px;
+  padding: 14px;
+  margin-top: 14px;
+}
+.rel-title {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--gray400);
+  margin-bottom: 10px;
+  display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+}
+
+.form-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--gray500);
+  margin-bottom: 5px;
+}
+.form-control, .form-select {
+  font-size: 13px;
+  font-family: inherit;
+  border-color: var(--gray300);
+  border-radius: 7px;
+  padding: 8px 12px;
+  color: var(--gray900);
+  background: #fff;
+}
+.form-control:focus, .form-select:focus {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+  outline: none;
+}
+
+.btn-save {
+  background: var(--blue);
+  border: none;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  padding: 8px 20px;
+  border-radius: 7px;
+  cursor: pointer;
+  display: inline-flex; align-items: center; gap: 6px;
+  transition: all .15s;
+}
+.btn-save:hover { background: var(--blue-d); }
+
+.btn-cancel {
+  background: #fff;
+  border: 1px solid var(--gray300);
+  color: var(--gray700);
+  font-size: 13px;
+  font-weight: 500;
+  font-family: inherit;
+  padding: 8px 16px;
+  border-radius: 7px;
+  cursor: pointer;
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.btn-cancel:hover { background: var(--gray100); }
+
+/* ── TOAST ── */
+.my-toast {
+  position: fixed; bottom: 24px; right: 24px; z-index: 9999;
+  padding: 12px 18px;
+  border-radius: 8px;
+  font-size: 13px; font-weight: 500; font-family: inherit;
+  display: flex; align-items: center; gap: 10px;
+  min-width: 250px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+  transform: translateY(80px); opacity: 0;
+  transition: all .3s;
+}
+.my-toast.show  { transform: translateY(0); opacity: 1; }
+.my-toast.ok    { background: var(--green-l); border: 1px solid #86efac; color: var(--green); }
+.my-toast.err   { background: var(--red-l); border: 1px solid #fca5a5; color: var(--red); }
+
+/* ── EMPTY STATE ── */
+.empty-s { text-align: center; padding: 48px 20px; }
+.empty-ico {
+  width: 48px; height: 48px;
+  background: var(--gray100);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+  color: var(--gray300);
+  margin: 0 auto 10px;
+}
+.empty-s p { font-size: 13px; color: var(--gray400); margin: 0; }
+
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-thumb { background: var(--gray300); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand">
+    <div class="brand-icon"><i class="bi bi-dribbble"></i></div>
+    Gestión Fútbol
+  </div>
+  <div class="nav-pills-top">
+    <button class="npill active" onclick="showPage('clubes')">Clubes</button>
+    <button class="npill" onclick="showPage('entrenadores')">Entrenadores</button>
+    <button class="npill" onclick="showPage('jugadores')">Jugadores</button>
+    <button class="npill" onclick="showPage('asociaciones')">Asociaciones</button>
+    <button class="npill" onclick="showPage('competiciones')">Competiciones</button>
+    <button class="npill" onclick="showPage('clubcomp')">Club-Comp</button>
+  </div>
+  <span class="port-tag">:8107</span>
+</div>
+
+<div class="layout">
+  <main>
+    <!-- CLUBES -->
+    <div id="page-clubes" class="page active">
+      <div class="ph">
+        <div class="ph-left"><h2><div class="ph-icon"><i class="bi bi-shield-fill"></i></div>Clubes<span class="rbadge rb-blue">Entidad Central</span></h2><p>@OneToOne Entrenador · @ManyToOne Asociacion · @OneToMany Jugadores</p></div>
+        <button class="btn-teal" onclick="openModal('clubes')"><i class="bi bi-plus-lg"></i>Nuevo Club</button>
+      </div>
+      <div class="t-card"><table class="table table-hover mb-0">
+        <thead><tr><th>ID</th><th>Nombre</th><th>Ciudad</th><th>Fundación</th><th>Entrenador</th><th>Asociación</th><th>Competiciones</th><th>Acciones</th></tr></thead>
+        <tbody id="tbody-clubes"><tr><td colspan="8"><div class="empty-s"><div class="empty-ico"><i class="bi bi-arrow-clockwise"></i></div><p>Cargando...</p></div></td></tr></tbody>
+      </table></div>
+    </div>
+
+    <!-- ENTRENADORES -->
+    <div id="page-entrenadores" class="page">
+      <div class="ph">
+        <div class="ph-left"><h2><div class="ph-icon"><i class="bi bi-person-fill"></i></div>Entrenadores<span class="rbadge rb-blue">@OneToOne</span></h2><p>Un entrenador puede dirigir un club</p></div>
+        <button class="btn-teal" onclick="openModal('entrenadores')"><i class="bi bi-plus-lg"></i>Nuevo Entrenador</button>
+      </div>
+      <div class="t-card"><table class="table table-hover mb-0">
+        <thead><tr><th>ID</th><th>Nombre</th><th>Apellido</th><th>Edad</th><th>Nacionalidad</th><th>Acciones</th></tr></thead>
+        <tbody id="tbody-entrenadores"><tr><td colspan="6"><div class="empty-s"><div class="empty-ico"><i class="bi bi-arrow-clockwise"></i></div><p>Cargando...</p></div></td></tr></tbody>
+      </table></div>
+    </div>
+
+    <!-- JUGADORES -->
+    <div id="page-jugadores" class="page">
+      <div class="ph">
+        <div class="ph-left"><h2><div class="ph-icon" style="background:var(--amber-l);color:var(--amber)"><i class="bi bi-people-fill"></i></div>Jugadores<span class="rbadge rb-amber">@OneToMany</span></h2><p>Un club tiene muchos jugadores</p></div>
+        <button class="btn-teal" onclick="openModal('jugadores')"><i class="bi bi-plus-lg"></i>Nuevo Jugador</button>
+      </div>
+      <div class="t-card"><table class="table table-hover mb-0">
+        <thead><tr><th>ID</th><th>Nombre</th><th>Apellido</th><th>Número</th><th>Posición</th><th>Club</th><th>Acciones</th></tr></thead>
+        <tbody id="tbody-jugadores"><tr><td colspan="7"><div class="empty-s"><div class="empty-ico"><i class="bi bi-arrow-clockwise"></i></div><p>Cargando...</p></div></td></tr></tbody>
+      </table></div>
+    </div>
+
+    <!-- ASOCIACIONES -->
+    <div id="page-asociaciones" class="page">
+      <div class="ph">
+        <div class="ph-left"><h2><div class="ph-icon"><i class="bi bi-building"></i></div>Asociaciones<span class="rbadge rb-blue">@ManyToOne</span></h2><p>Muchos clubes pertenecen a una asociación</p></div>
+        <button class="btn-teal" onclick="openModal('asociaciones')"><i class="bi bi-plus-lg"></i>Nueva Asociación</button>
+      </div>
+      <div class="t-card"><table class="table table-hover mb-0">
+        <thead><tr><th>ID</th><th>Nombre</th><th>País</th><th>Presidente</th><th>Acciones</th></tr></thead>
+        <tbody id="tbody-asociaciones"><tr><td colspan="5"><div class="empty-s"><div class="empty-ico"><i class="bi bi-arrow-clockwise"></i></div><p>Cargando...</p></div></td></tr></tbody>
+      </table></div>
+    </div>
+
+    <!-- COMPETICIONES -->
+    <div id="page-competiciones" class="page">
+      <div class="ph">
+        <div class="ph-left"><h2><div class="ph-icon" style="background:#ede9fe;color:#5b21b6"><i class="bi bi-trophy-fill"></i></div>Competiciones<span class="rbadge rb-purple">@ManyToMany</span></h2><p>Un club participa en muchas competiciones</p></div>
+        <button class="btn-teal" onclick="openModal('competiciones')"><i class="bi bi-plus-lg"></i>Nueva Competición</button>
+      </div>
+      <div class="t-card"><table class="table table-hover mb-0">
+        <thead><tr><th>ID</th><th>Nombre</th><th>Premio</th><th>Inicio</th><th>Fin</th><th>Acciones</th></tr></thead>
+        <tbody id="tbody-competiciones"><tr><td colspan="6"><div class="empty-s"><div class="empty-ico"><i class="bi bi-arrow-clockwise"></i></div><p>Cargando...</p></div></td></tr></tbody>
+      </table></div>
+    </div>
+
+    <!-- CLUB COMPETICION -->
+    <div id="page-clubcomp" class="page">
+      <div class="ph">
+        <div class="ph-left"><h2><div class="ph-icon" style="background:#ede9fe;color:#5b21b6"><i class="bi bi-diagram-3-fill"></i></div>Club-Competición<span class="rbadge rb-purple">Tabla Intermedia</span></h2><p>Entidad de la relación @ManyToMany con atributos propios</p></div>
+        <button class="btn-teal" onclick="openModal('clubcomp')"><i class="bi bi-plus-lg"></i>Nueva Inscripción</button>
+      </div>
+      <div class="t-card"><table class="table table-hover mb-0">
+        <thead><tr><th>ID</th><th>Club</th><th>Competición</th><th>Inscripción</th><th>Estado</th><th>Acciones</th></tr></thead>
+        <tbody id="tbody-clubcomp"><tr><td colspan="6"><div class="empty-s"><div class="empty-ico"><i class="bi bi-arrow-clockwise"></i></div><p>Cargando...</p></div></td></tr></tbody>
+      </table></div>
+    </div>
+  </main>
+</div>
+
+<!-- MODAL -->
+<div class="modal fade" id="crudModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div><div class="modal-title" id="modalTitle">Nuevo registro</div><div class="modal-sub" id="modalSub"></div></div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="modalFields"></div>
+      <div class="modal-footer gap-2">
+        <button class="btn-cancel" data-bs-dismiss="modal"><i class="bi bi-x-lg"></i>Cancelar</button>
+        <button class="btn-save" onclick="submitForm()"><i class="bi bi-check2"></i>Guardar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="my-toast" id="myToast"><i class="bi" id="toastIcon"></i><span id="toastMsg"></span></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+const BASE='http://localhost:8107';
+let currentPage='clubes',editingId=null,editingEntity=null,bsModal=null;
+const pages=['clubes','entrenadores','jugadores','asociaciones','competiciones','clubcomp'];
+// Mapa global para guardar datos de filas sin pasar JSON por onclick
+const rowDataMap={};
+
+function ep(e){return e==='clubcomp'?'/api/club-competicion':'/api/'+e;}
+
+function showPage(name){
+  currentPage=name;
+  pages.forEach(p=>{const el=document.getElementById('page-'+p);if(el)el.classList.remove('active');});
+  const t=document.getElementById('page-'+name);if(t)t.classList.add('active');
+  document.querySelectorAll('.npill').forEach((b,i)=>b.classList.toggle('active',pages[i]===name));
+  document.querySelectorAll('.s-item').forEach((b,i)=>b.classList.toggle('active',pages[i]===name));
+  loadTable(name);
+}
+
+let clubCompeticionData=[];
+
+async function loadTable(entity){
+  try{
+    const res=await fetch(BASE+ep(entity));if(!res.ok)throw new Error();
+    const data=await res.json();
+    if(entity==='clubes'){
+      // Cargar tambien club-competicion para mostrar competiciones del club
+      try{
+        const res2=await fetch(BASE+'/api/club-competicion');
+        clubCompeticionData=await res2.json();
+      }catch(e){ clubCompeticionData=[]; }
+    }
+    renderTable(entity,data);
+  }catch(e){
+    document.getElementById('tbody-'+entity).innerHTML=`<tr><td colspan="10"><div class="empty-s"><div class="empty-ico" style="background:#fef2f2;color:#ef4444;"><i class="bi bi-exclamation-triangle"></i></div><p style="color:#ef4444;">Error conectando al servidor</p></div></td></tr>`;
+  }
+}
+
+function renderTable(entity,data){
+  const tbody=document.getElementById('tbody-'+entity);
+  if(!data.length){tbody.innerHTML=`<tr><td colspan="10"><div class="empty-s"><div class="empty-ico"><i class="bi bi-inbox"></i></div><p>Sin registros aún</p></div></td></tr>`;return;}
+  tbody.innerHTML=data.map(r=>{
+    let cells='';
+    if(entity==='clubes'){
+      // Buscar competiciones del club desde club-competicion
+      const compNames = (clubCompeticionData||[])
+        .filter(cc=>cc.club&&cc.club.id===r.id)
+        .map(cc=>cc.competicion?`<span class="c-chip" style="margin:1px;"><i class="bi bi-trophy-fill" style="color:var(--purple)"></i>${cc.competicion.nombre}</span>`:'')
+        .join('');
+      cells=`<td class="c-id">${r.id}</td><td class="c-name">${r.nombre}</td><td>${r.ciudad}</td>
+             <td><span class="c-chip"><i class="bi bi-calendar3"></i>${r.anioFundacion}</span></td>
+             <td>${r.entrenador?`<span style="color:var(--teal);font-weight:500;"><i class="bi bi-person-circle me-1"></i>${r.entrenador.nombre} ${r.entrenador.apellido}</span>`:'<span style="color:var(--txt3);font-style:italic;">Sin asignar</span>'}</td>
+             <td>${r.asociacion?`<span class="c-chip"><i class="bi bi-building"></i>${r.asociacion.nombre}</span>`:'<span style="color:var(--txt3);font-style:italic;">Sin asignar</span>'}</td>
+             <td>${compNames||'<span style="color:var(--txt3);font-style:italic;">Sin competiciones</span>'}</td>`;
+    } else if(entity==='entrenadores')
+      cells=`<td class="c-id">${r.id}</td><td class="c-name">${r.nombre}</td><td>${r.apellido}</td>
+             <td><span class="c-chip"><i class="bi bi-clock"></i>${r.edad} años</span></td><td>${r.nacionalidad}</td>`;
+    else if(entity==='jugadores')
+      cells=`<td class="c-id">${r.id}</td><td class="c-name">${r.nombre}</td><td>${r.apellido}</td>
+             <td><span class="c-num">${r.numero}</span></td><td><span class="c-chip">${r.posicion}</span></td>
+             <td>${r.club?`<span style="color:var(--teal);font-weight:500;"><i class="bi bi-shield-fill me-1"></i>${r.club.nombre}</span>`:'<span style="color:var(--txt3);">Sin club</span>'}</td>`;
+    else if(entity==='asociaciones')
+      cells=`<td class="c-id">${r.id}</td><td class="c-name">${r.nombre}</td>
+             <td><i class="bi bi-globe me-1" style="color:var(--txt3)"></i>${r.pais}</td><td>${r.presidente}</td>`;
+    else if(entity==='competiciones')
+      cells=`<td class="c-id">${r.id}</td><td class="c-name">${r.nombre}</td>
+             <td><span class="c-chip"><i class="bi bi-cash"></i>$${r.montoPremio?.toLocaleString()}</span></td>
+             <td>${r.fechaInicio}</td><td>${r.fechaFin}</td>`;
+    else if(entity==='clubcomp'){
+      const sc=r.estado==='CAMPEON'?'st-c':r.estado==='ACTIVO'?'st-a':'st-e';
+      const ic=r.estado==='CAMPEON'?'bi-trophy-fill':r.estado==='ACTIVO'?'bi-check-circle-fill':'bi-x-circle-fill';
+      cells=`<td class="c-id">${r.id}</td>
+             <td>${r.club?`<span style="color:var(--teal);font-weight:500;"><i class="bi bi-shield-fill me-1"></i>${r.club.nombre}</span>`:'—'}</td>
+             <td>${r.competicion?`<span style="color:var(--purple);font-weight:500;"><i class="bi bi-trophy-fill me-1"></i>${r.competicion.nombre}</span>`:'—'}</td>
+             <td><span class="c-chip"><i class="bi bi-calendar-plus"></i>${r.fechaInscripcion}</span></td>
+             <td><span class="st-badge ${sc}"><i class="bi ${ic}"></i>${r.estado}</span></td>`;
+    }
+    // Guardar datos en el mapa usando clave "entidad-id" para evitar problemas con JSON en onclick
+    const mapKey=`${entity}-${r.id}`;
+    rowDataMap[mapKey]=r;
+    return `<tr>${cells}<td><div style="display:flex;gap:6px;">
+      <button class="btn-ed btn-edit-s" onclick="openEditFromMap('${entity}',${r.id})"><i class="bi bi-pencil"></i>Editar</button>
+      <button class="btn-ed btn-del-s" onclick="deleteRecord('${entity}',${r.id})"><i class="bi bi-trash"></i></button>
+    </div></td></tr>`;
+  }).join('');
+}
+
+// Carga opciones para un select desde la API
+async function loadOpts(endpoint, labelFn, selectedId=null, disabledIds=[]){
+  try{
+    const res=await fetch(BASE+endpoint);
+    if(!res.ok) throw new Error();
+    const items=await res.json();
+    return `<option value="">-- Selecciona --</option>`+
+      items.map(i=>{
+        const dis=disabledIds.includes(i.id)&&selectedId!==i.id;
+        return `<option value="${i.id}" ${selectedId==i.id?'selected':''} ${dis?'disabled':''}>
+          ${labelFn(i)}${dis?' (ya asignado)':''}
+        </option>`;
+      }).join('');
+  }catch(e){return '<option value="">Sin datos disponibles</option>';}
+}
+
+async function openModal(entity,data=null){
+  editingEntity=entity;editingId=data?data.id:null;
+  const names={clubes:'Club',entrenadores:'Entrenador',jugadores:'Jugador',asociaciones:'Asociación',competiciones:'Competición',clubcomp:'Inscripción'};
+  document.getElementById('modalTitle').textContent=(data?'Editar ':'Nuevo ')+names[entity];
+  document.getElementById('modalSub').textContent=data?'Modifica los datos del registro':'Completa el formulario para crear';
+  document.getElementById('modalFields').innerHTML='<div style="text-align:center;padding:30px;color:var(--txt3);"><i class="bi bi-arrow-clockwise" style="font-size:20px;"></i><p style="margin-top:8px;font-size:13px;">Cargando formulario...</p></div>';
+  if(!bsModal)bsModal=new bootstrap.Modal(document.getElementById('crudModal'));
+  bsModal.show();
+
+  let html='';
+
+  if(entity==='clubes'){
+    const n=data?data.nombre:'',c=data?data.ciudad:'',a=data?data.anioFundacion:'';
+    html=`
+    <div class="row g-2 mb-3">
+      <div class="col-12">
+        <label class="form-label"><i class="bi bi-shield me-1"></i>Nombre del Club</label>
+        <input type="text" class="form-control" id="field-nombre" value="${n}" placeholder="Ej: Millonarios FC">
+      </div>
+    </div>
+    <div class="row g-2 mb-1">
+      <div class="col">
+        <label class="form-label"><i class="bi bi-geo-alt me-1"></i>Ciudad</label>
+        <input type="text" class="form-control" id="field-ciudad" value="${c}" placeholder="Ej: Bogotá">
+      </div>
+      <div class="col">
+        <label class="form-label"><i class="bi bi-calendar3 me-1"></i>Año Fundación</label>
+        <input type="number" class="form-control" id="field-anioFundacion" value="${a}" placeholder="Ej: 1946">
+      </div>
+    </div>
+    <div class="rel-section">
+      <div class="rel-title"><i class="bi bi-person-fill" style="color:var(--teal)"></i> @OneToOne — Entrenador <span class="rbadge rb-teal" style="font-size:9px;">Un entrenador por club</span></div>
+      <label class="form-label"><i class="bi bi-person me-1"></i>Entrenador</label>
+      <select class="form-select" id="field-entrenadorId"><option value="">⏳ Cargando...</option></select>
+      <div style="font-size:11px;color:var(--txt3);margin-top:5px;"><i class="bi bi-info-circle me-1"></i>Los marcados como "ya asignado" pertenecen a otro club</div>
+    </div>
+    <div class="rel-section">
+      <div class="rel-title"><i class="bi bi-building" style="color:var(--blue)"></i> @ManyToOne — Asociación <span class="rbadge rb-blue" style="font-size:9px;">Muchos clubes a una asociación</span></div>
+      <label class="form-label"><i class="bi bi-building me-1"></i>Asociación</label>
+      <select class="form-select" id="field-asociacionId"><option value="">⏳ Cargando...</option></select>
+    </div>
+    <div class="rel-section">
+      <div class="rel-title"><i class="bi bi-people-fill" style="color:var(--amber)"></i> @OneToMany — Jugadores <span class="rbadge rb-amber" style="font-size:9px;">Un club tiene muchos jugadores</span></div>
+      <label class="form-label"><i class="bi bi-people me-1"></i>Jugadores del club</label>
+      <select class="form-select" id="field-jugadoresIds" multiple size="4" style="height:auto;"><option disabled>⏳ Cargando...</option></select>
+      <div style="font-size:11px;color:var(--txt3);margin-top:5px;"><i class="bi bi-info-circle me-1"></i>Ctrl+Click para seleccionar varios</div>
+    </div>
+    <div class="rel-section">
+      <div class="rel-title"><i class="bi bi-trophy-fill" style="color:var(--purple)"></i> @ManyToMany — Competiciones <span class="rbadge rb-purple" style="font-size:9px;">Un club en muchas competiciones</span></div>
+      <label class="form-label"><i class="bi bi-trophy me-1"></i>Competiciones del club</label>
+      <select class="form-select" id="field-competicionesIds" multiple size="4" style="height:auto;"><option disabled>⏳ Cargando...</option></select>
+      <div style="font-size:11px;color:var(--txt3);margin-top:5px;"><i class="bi bi-info-circle me-1"></i>Ctrl+Click para seleccionar varias</div>
+    </div>`;
+    document.getElementById('modalFields').innerHTML=html;
+    // Cargar todos los selects en paralelo sin bloquear el formulario
+    Promise.all([
+      fetch(BASE+'/api/clubes').then(r=>r.json()).catch(()=>[]),
+      fetch(BASE+'/api/entrenadores').then(r=>r.json()).catch(()=>[]),
+      fetch(BASE+'/api/asociaciones').then(r=>r.json()).catch(()=>[]),
+      fetch(BASE+'/api/jugadores').then(r=>r.json()).catch(()=>[]),
+      fetch(BASE+'/api/competiciones').then(r=>r.json()).catch(()=>[]),
+      editingId?fetch(BASE+'/api/club-competicion').then(r=>r.json()).catch(()=>[]):Promise.resolve([])
+    ]).then(([clubes,entrenadores,asociaciones,jugadores,competiciones,ccs])=>{
+      const entIdsUsados=clubes.filter(cl=>cl.entrenador&&cl.id!==editingId).map(cl=>cl.entrenador.id);
+      const selE=document.getElementById('field-entrenadorId');
+      const selA=document.getElementById('field-asociacionId');
+      const selJ=document.getElementById('field-jugadoresIds');
+      const selC=document.getElementById('field-competicionesIds');
+      if(selE) selE.innerHTML=`<option value="">— Sin entrenador —</option>`+entrenadores.map(e=>{
+        const dis=entIdsUsados.includes(e.id)&&data?.entrenador?.id!==e.id;
+        return `<option value="${e.id}" ${data?.entrenador?.id===e.id?'selected':''} ${dis?'disabled':''}>${e.nombre} ${e.apellido}${dis?' (ya asignado)':''}</option>`;
+      }).join('');
+      if(selA) selA.innerHTML=`<option value="">— Sin asociación —</option>`+asociaciones.map(a=>`<option value="${a.id}" ${data?.asociacion?.id===a.id?'selected':''}>${a.nombre} — ${a.pais}</option>`).join('');
+      const jugAsig=editingId?jugadores.filter(j=>j.club&&j.club.id===editingId).map(j=>j.id):[];
+      if(selJ) selJ.innerHTML=jugadores.map(j=>`<option value="${j.id}" ${jugAsig.includes(j.id)?'selected':''}>${j.nombre} ${j.apellido} — #${j.numero} ${j.posicion}</option>`).join('');
+      const compAsig=editingId?ccs.filter(cc=>cc.club&&cc.club.id===editingId).map(cc=>cc.competicion.id):[];
+      if(selC) selC.innerHTML=competiciones.map(c=>`<option value="${c.id}" ${compAsig.includes(c.id)?'selected':''}>${c.nombre} — $${c.montoPremio?.toLocaleString()}</option>`).join('');
+    });
+    return;
+
+  } else if(entity==='jugadores'){
+    const n=data?data.nombre:'',ap=data?data.apellido:'',nu=data?data.numero:'',po=data?data.posicion:'';
+    html=`
+    <div class="row g-2 mb-3">
+      <div class="col">
+        <label class="form-label"><i class="bi bi-person me-1"></i>Nombre</label>
+        <input type="text" class="form-control" id="field-nombre" value="${n}" placeholder="Ej: David">
+      </div>
+      <div class="col">
+        <label class="form-label"><i class="bi bi-person me-1"></i>Apellido</label>
+        <input type="text" class="form-control" id="field-apellido" value="${ap}" placeholder="Ej: Silva">
+      </div>
+    </div>
+    <div class="row g-2 mb-1">
+      <div class="col">
+        <label class="form-label"><i class="bi bi-hash me-1"></i>Número camiseta</label>
+        <input type="number" class="form-control" id="field-numero" value="${nu}" placeholder="Ej: 10">
+      </div>
+      <div class="col">
+        <label class="form-label"><i class="bi bi-grid me-1"></i>Posición</label>
+        <input type="text" class="form-control" id="field-posicion" value="${po}" placeholder="Ej: Mediocampista">
+      </div>
+    </div>
+    <div class="rel-section">
+      <div class="rel-title">
+        <i class="bi bi-shield-fill" style="color:var(--teal)"></i>
+        @ManyToOne — Club
+        <span class="rbadge rb-teal" style="font-size:9px;">El jugador pertenece a un club</span>
+      </div>
+      <label class="form-label"><i class="bi bi-shield me-1"></i>Club</label>
+      <select class="form-select" id="field-clubId"><option value="">⏳ Cargando clubes...</option></select>
+    </div>`;
+    document.getElementById('modalFields').innerHTML=html;
+    loadOpts('/api/clubes',c=>`${c.nombre} — ${c.ciudad}`,data?.club?.id)
+      .then(opts=>{const el=document.getElementById('field-clubId');if(el)el.innerHTML=opts;});
+    return;
+
+  } else if(entity==='clubcomp'){
+    const fe=data?data.fechaInscripcion:'',es=data?data.estado:'ACTIVO';
+    html=`
+    <div class="rel-section">
+      <div class="rel-title">
+        <i class="bi bi-diagram-3-fill" style="color:var(--purple)"></i>
+        @ManyToMany — Club y Competición
+      </div>
+      <div class="row g-2">
+        <div class="col-6">
+          <label class="form-label"><i class="bi bi-shield me-1"></i>Club</label>
+          <select class="form-select" id="field-clubId"><option value="">⏳ Cargando...</option></select>
+        </div>
+        <div class="col-6">
+          <label class="form-label"><i class="bi bi-trophy me-1"></i>Competición</label>
+          <select class="form-select" id="field-competicionId"><option value="">⏳ Cargando...</option></select>
+        </div>
+      </div>
+    </div>
+    <div class="row g-2 mt-2">
+      <div class="col">
+        <label class="form-label"><i class="bi bi-calendar-plus me-1"></i>Fecha Inscripción</label>
+        <input type="date" class="form-control" id="field-fechaInscripcion" value="${fe}">
+      </div>
+      <div class="col">
+        <label class="form-label"><i class="bi bi-flag me-1"></i>Estado</label>
+        <select class="form-select" id="field-estado">
+          <option value="ACTIVO"${es==='ACTIVO'?' selected':''}>✅ ACTIVO</option>
+          <option value="ELIMINADO"${es==='ELIMINADO'?' selected':''}>❌ ELIMINADO</option>
+          <option value="CAMPEON"${es==='CAMPEON'?' selected':''}>🏆 CAMPEON</option>
+        </select>
+      </div>
+    </div>`;
+    document.getElementById('modalFields').innerHTML=html;
+    Promise.all([
+      loadOpts('/api/clubes',c=>`${c.nombre} — ${c.ciudad}`,data?.club?.id),
+      loadOpts('/api/competiciones',c=>c.nombre,data?.competicion?.id)
+    ]).then(([optsC,optsComp])=>{
+      const sc=document.getElementById('field-clubId');
+      const scomp=document.getElementById('field-competicionId');
+      if(sc) sc.innerHTML=optsC;
+      if(scomp) scomp.innerHTML=optsComp;
+    });
+    return;
+
+  } else if(entity==='entrenadores'){
+    const n=data?data.nombre:'',a=data?data.apellido:'',e=data?data.edad:'',na=data?data.nacionalidad:'';
+    html=`
+    <div class="row g-2 mb-3">
+      <div class="col">
+        <label class="form-label"><i class="bi bi-person me-1"></i>Nombre</label>
+        <input type="text" class="form-control" id="field-nombre" value="${n}" placeholder="Ej: Alberto">
+      </div>
+      <div class="col">
+        <label class="form-label"><i class="bi bi-person me-1"></i>Apellido</label>
+        <input type="text" class="form-control" id="field-apellido" value="${a}" placeholder="Ej: Gamero">
+      </div>
+    </div>
+    <div class="row g-2">
+      <div class="col">
+        <label class="form-label"><i class="bi bi-clock me-1"></i>Edad</label>
+        <input type="number" class="form-control" id="field-edad" value="${e}" placeholder="Ej: 57">
+      </div>
+      <div class="col">
+        <label class="form-label"><i class="bi bi-flag me-1"></i>Nacionalidad</label>
+        <input type="text" class="form-control" id="field-nacionalidad" value="${na}" placeholder="Ej: Colombiana">
+      </div>
+    </div>`;
+
+  } else if(entity==='asociaciones'){
+    const n=data?data.nombre:'',p=data?data.pais:'',pr=data?data.presidente:'';
+    html=`
+    <div class="mb-3">
+      <label class="form-label"><i class="bi bi-building me-1"></i>Nombre</label>
+      <input type="text" class="form-control" id="field-nombre" value="${n}" placeholder="Ej: Federación Colombiana de Fútbol">
+    </div>
+    <div class="row g-2">
+      <div class="col">
+        <label class="form-label"><i class="bi bi-globe me-1"></i>País</label>
+        <input type="text" class="form-control" id="field-pais" value="${p}" placeholder="Ej: Colombia">
+      </div>
+      <div class="col">
+        <label class="form-label"><i class="bi bi-person-badge me-1"></i>Presidente</label>
+        <input type="text" class="form-control" id="field-presidente" value="${pr}" placeholder="Ej: Ramón Jesurún">
+      </div>
+    </div>`;
+
+  } else if(entity==='competiciones'){
+    const n=data?data.nombre:'',m=data?data.montoPremio:'',fi=data?data.fechaInicio:'',ff=data?data.fechaFin:'';
+    html=`
+    <div class="mb-3">
+      <label class="form-label"><i class="bi bi-trophy me-1"></i>Nombre</label>
+      <input type="text" class="form-control" id="field-nombre" value="${n}" placeholder="Ej: Copa Libertadores">
+    </div>
+    <div class="mb-3">
+      <label class="form-label"><i class="bi bi-cash-stack me-1"></i>Monto Premio ($)</label>
+      <input type="number" class="form-control" id="field-montoPremio" value="${m}" placeholder="Ej: 23000000">
+    </div>
+    <div class="row g-2">
+      <div class="col">
+        <label class="form-label"><i class="bi bi-calendar-event me-1"></i>Fecha Inicio</label>
+        <input type="date" class="form-control" id="field-fechaInicio" value="${fi}">
+      </div>
+      <div class="col">
+        <label class="form-label"><i class="bi bi-calendar-check me-1"></i>Fecha Fin</label>
+        <input type="date" class="form-control" id="field-fechaFin" value="${ff}">
+      </div>
+    </div>`;
+  }
+
+  document.getElementById('modalFields').innerHTML=html;
+}
+
+function openEditModal(entity,data){openModal(entity,data);}
+function openEditFromMap(entity,id){
+  const data=rowDataMap[`${entity}-${id}`];
+  if(data) openModal(entity,data);
+  else { toast('No se pudo cargar el registro','err'); }
+}
+
+function getMultiSelect(id){
+  const el=document.getElementById(id);
+  if(!el) return [];
+  return Array.from(el.selectedOptions).map(o=>Number(o.value));
+}
+
+async function submitForm(){
+  let body={};
+  if(editingEntity==='clubes'){
+    body={
+      nombre:v('nombre'),ciudad:v('ciudad'),anioFundacion:n('anioFundacion'),
+      entrenador:vi('entrenadorId')?{id:n('entrenadorId')}:null,
+      asociacion:vi('asociacionId')?{id:n('asociacionId')}:null,
+      jugadoresSeleccionados:getMultiSelect('jugadoresIds'),
+      competicionesSeleccionadas:getMultiSelect('competicionesIds')
+    };
+  } else if(editingEntity==='jugadores'){
+    body={nombre:v('nombre'),apellido:v('apellido'),numero:n('numero'),posicion:v('posicion'),
+          club:vi('clubId')?{id:n('clubId')}:null};
+  } else if(editingEntity==='clubcomp'){
+    body={club:{id:n('clubId')},competicion:{id:n('competicionId')},
+          fechaInscripcion:v('fechaInscripcion'),estado:v('estado')};
+  } else if(editingEntity==='entrenadores'){
+    body={nombre:v('nombre'),apellido:v('apellido'),edad:n('edad'),nacionalidad:v('nacionalidad')};
+  } else if(editingEntity==='asociaciones'){
+    body={nombre:v('nombre'),pais:v('pais'),presidente:v('presidente')};
+  } else if(editingEntity==='competiciones'){
+    body={nombre:v('nombre'),montoPremio:n('montoPremio'),fechaInicio:v('fechaInicio'),fechaFin:v('fechaFin')};
+  }
+
+  const method=editingId?'PUT':'POST';
+  const url=BASE+ep(editingEntity)+(editingId?'/'+editingId:'');
+  try{
+    const res=await fetch(url,{method,headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    if(res.ok){
+      bsModal.hide();
+      toast('Registro '+(editingId?'actualizado':'creado')+' correctamente','ok');
+      loadTable(currentPage);
+    } else {
+      const err=await res.text();
+      toast('Error al guardar','err');
+    }
+  }catch(e){toast('Error de conexión con el servidor','err');}
+}
+
+function v(id){const el=document.getElementById('field-'+id);return el?el.value:'';}
+function n(id){const el=document.getElementById('field-'+id);return el?Number(el.value):0;}
+function vi(id){const el=document.getElementById('field-'+id);return el&&el.value&&el.value!=='0'&&el.value!=='';}
+
+async function deleteRecord(entity,id){
+  if(!confirm('¿Eliminar este registro?'))return;
+  try{
+    const res=await fetch(BASE+ep(entity)+'/'+id,{method:'DELETE'});
+    if(res.ok){toast('Registro eliminado correctamente','ok');loadTable(currentPage);}
+    else toast('Error al eliminar','err');
+  }catch(e){toast('Error de conexión','err');}
+}
+
+function toast(msg,type='ok'){
+  const t=document.getElementById('myToast');
+  document.getElementById('toastIcon').className='bi '+(type==='ok'?'bi-check-circle-fill':'bi-exclamation-circle-fill');
+  document.getElementById('toastMsg').textContent=msg;
+  t.className='my-toast '+type;
+  setTimeout(()=>t.classList.add('show'),10);
+  setTimeout(()=>t.classList.remove('show'),3500);
+}
+
+loadTable('clubes');
+</script>
+</body>
+</html>
